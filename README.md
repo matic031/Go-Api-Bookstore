@@ -2,7 +2,7 @@
  
 Commands:<br><br>
 
-run GO server: go run main.go<br><br>
+run GO server: `go run main.go`<br><br>
 check list of books: curl http://localhost:8080/books<br><br>
 create new book from JSON payload (body.json): curl -X POST -H "Content-Type: application/json" -d @body.json http://localhost:8080/books<br><br>
 remove book: curl -X DELETE http://localhost:8080/books/{id}<br><br>
