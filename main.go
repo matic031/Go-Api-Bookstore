@@ -1,13 +1,13 @@
 package main
 
 import (
+	"errors" // Importing package for handling errors
 	"net/http"
-
-	"errors"
 
 	"github.com/gin-gonic/gin"
 )
 
+// Defining a struct for a book
 type book struct {
 	ID       string `json:"id"`
 	Title    string `json:"title"`
@@ -15,69 +15,74 @@ type book struct {
 	Quantity int    `json:"quantity"`
 }
 
+// Creating a slice of books
 var books = []book{
 	{ID: "1", Title: "Cvetje v jeseni", Author: "Ivan Tavčar", Quantity: 2},
 	{ID: "2", Title: "Deseti brat", Author: "Ivan Sivec", Quantity: 5},
 	{ID: "3", Title: "Martin Krpan", Author: "Fran Levstik", Quantity: 3},
 }
 
+// Handler function to get all books
 func getBooks(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, books)
+	c.IndentedJSON(http.StatusOK, books) // Returns all books
 }
 
+// Handler function to get a book by its ID
 func bookById(c *gin.Context) {
-	id := c.Param("id")
-	book, err := getBookById(id)
+	id := c.Param("id")          // Get the id of the book from the URL parameter
+	book, err := getBookById(id) // Get the book from the ID
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."}) // If book is not found, return an error message
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, book)
+	c.IndentedJSON(http.StatusOK, book) // Return the book
 }
 
+// Handler function to checkout a book
 func checkoutBook(c *gin.Context) {
-	id, ok := c.GetQuery("id")
+	id, ok := c.GetQuery("id") // Get the id of the book from the query parameter
 
 	if !ok {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."}) // If id query parameter is missing, return an error message
 		return
 	}
 
-	book, err := getBookById(id)
+	book, err := getBookById(id) // Get the book from the ID
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."}) // If book is not found, return an error message
 		return
 	}
 
 	if book.Quantity <= 0 {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Book not available."})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Book not available."}) // If book is not available, return an error message
 		return
 	}
 
-	book.Quantity -= 1
-	c.IndentedJSON(http.StatusOK, book)
+	book.Quantity -= 1                  // Decrement the book quantity by 1
+	c.IndentedJSON(http.StatusOK, book) // Return the book
 }
 
+// Handler function to return a book
 func returnBook(c *gin.Context) {
-	id, ok := c.GetQuery("id")
+	id, ok := c.GetQuery("id") // Get the id of the book from the query parameter
 
 	if !ok {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Missing id query parameter."}) // If id query parameter is missing, return an error message
 		return
 	}
 
-	book, err := getBookById(id)
+	book, err := getBookById(id) // Get the book from the ID
 
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Book not found."}) // If book is not found, return an error message
 		return
 	}
 
-	book.Quantity += 1
-	c.IndentedJSON(http.StatusOK, book)
+	book.Quantity += 1                  // Increment the book quantity by 1
+	c.IndentedJSON(http.StatusOK, book) // Return the book
 }
 
 func getBookById(id string) (*book, error) {
